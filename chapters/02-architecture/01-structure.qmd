@@ -1,0 +1,32 @@
+# Estructura del framework
+
+El **Quarto Extensions Framework** organiza sus componentes en dos niveles claramente diferenciados.
+
+- Un núcleo compartido (**Core**), responsable de proporcionar la infraestructura común.
+- Un conjunto de extensiones independientes, cada una especializada en una tecnología concreta.
+
+La estructura general del proyecto es la siguiente.
+
+```{.plantuml}
+@startuml
+
+folder "extensions" {
+
+    folder "core" {
+        file "engine.lua"
+        file "config.lua"
+        file "cache.lua"
+        file "filesystem.lua"
+        file "mediabag.lua"
+        file "metadata.lua"
+    }
+
+    folder "plantuml" {
+        file "plantuml.lua"
+        file "compiler.lua"
+        file "defaults.lua"
+    }
+
+}
+
+@enduml

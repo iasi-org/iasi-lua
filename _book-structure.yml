@@ -4,5 +4,13 @@ book:
     - part: "chapters/01-origin/index.qmd"
       chapters:
         - "chapters/01-origin/01-problem.qmd"
+        - "chapters/01-origin/02-evolution.qmd"
+        - "chapters/01-origin/03-framework.qmd"
+    - part: "chapters/02-architecture/index.qmd"
+      chapters:
+        - "chapters/02-architecture/01-structure.qmd"
+        - "chapters/02-architecture/02-core.qmd"
+        - "chapters/02-architecture/03-extensions.qmd"
+        - "chapters/02-architecture/04-lifecycle.qmd"
     - "./references.qmd"
     - "./licenses.qmd"

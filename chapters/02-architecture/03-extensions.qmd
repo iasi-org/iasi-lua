@@ -1,0 +1,157 @@
+# Las extensiones
+
+Una extensión constituye la unidad funcional del framework.
+
+Cada extensión encapsula el conocimiento necesario para integrar una tecnología concreta dentro del proceso de construcción de Quarto.
+
+El núcleo proporciona la infraestructura.
+
+La extensión aporta el comportamiento específico.
+
+```{.plantuml}
+@startuml
+
+package "Core" {
+
+    interface Engine
+
+}
+
+package "PlantUML" {
+
+    component Bootstrap
+    component Defaults
+    component Compiler
+
+}
+
+Bootstrap --> Engine
+Bootstrap --> Defaults
+Bootstrap --> Compiler
+
+@enduml
+```
+
+Todas las extensiones siguen la misma organización.
+
+```text
+extension/
+├── bootstrap.lua
+├── compiler.lua
+└── defaults.lua
+```
+
+Cada archivo tiene una responsabilidad claramente definida.
+
+| Archivo | Responsabilidad |
+|----------|-----------------|
+| `bootstrap.lua` | Registra la extensión y conecta sus componentes con el núcleo. |
+| `compiler.lua` | Implementa la integración con la tecnología externa. |
+| `defaults.lua` | Define la configuración por defecto. |
+
+## Bootstrap
+
+El bootstrap constituye el punto de entrada de la extensión.
+
+Su función consiste en localizar el núcleo y registrar los componentes propios de la extensión.
+
+No contiene lógica de negocio.
+
+Simplemente describe cómo debe construirse la extensión.
+
+```{.plantuml}
+@startuml
+
+start
+
+:Bootstrap;
+
+:Registrar configuración;
+
+:Registrar compilador;
+
+:Crear Engine;
+
+stop
+
+@enduml
+```
+
+Gracias a este mecanismo todas las extensiones presentan exactamente el mismo ciclo de vida.
+
+## Defaults
+
+Cada extensión define su propia configuración inicial.
+
+Por ejemplo, PlantUML establece como valores predeterminados:
+
+- servidor de compilación;
+- formato de salida;
+- comportamiento de la caché;
+- lista inicial de estilos.
+
+Estos valores pueden modificarse posteriormente desde el proyecto Quarto.
+
+```yaml
+filter-options:
+  plantuml:
+    server: http://localhost:8080
+    cache: true
+```
+
+La configuración del proyecto siempre tiene prioridad sobre los valores definidos por la extensión.
+
+## Compiler
+
+El compilador es el único componente que conoce realmente la tecnología integrada.
+
+En PlantUML sus responsabilidades son:
+
+- preparar el código fuente;
+- incorporar los estilos configurados;
+- realizar la petición HTTP al servidor;
+- interpretar la respuesta;
+- indicar el tipo MIME del recurso generado.
+
+El resto del framework permanece completamente ajeno a estos detalles.
+
+## Independencia
+
+Una consecuencia importante de este diseño es que dos extensiones distintas pueden reutilizar exactamente el mismo núcleo.
+
+```{.plantuml}
+@startuml
+
+package "Core" {
+    component Engine
+}
+
+package "PlantUML" {
+    component Compiler
+}
+
+package "Otra extensión" {
+    component Compiler2
+}
+
+Compiler --> Engine
+Compiler2 --> Engine
+
+@enduml
+```
+
+El núcleo no necesita modificarse para incorporar nuevas tecnologías.
+
+Cada nueva extensión implementa únicamente aquello que le pertenece.
+
+## Un contrato sencillo
+
+Desde el punto de vista del framework, todas las extensiones ofrecen el mismo contrato.
+
+- una configuración por defecto;
+- un compilador;
+- un punto de entrada.
+
+Esta simplicidad reduce el esfuerzo necesario para desarrollar nuevas integraciones y permite mantener una arquitectura uniforme independientemente de la tecnología utilizada.
+
+La incorporación de una nueva extensión consiste, fundamentalmente, en implementar ese contrato y dejar que el núcleo gestione el resto del ciclo de vida.

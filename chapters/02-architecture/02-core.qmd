@@ -1,0 +1,147 @@
+# El núcleo
+
+El núcleo contiene las capacidades comunes que necesita una extensión para participar en el proceso de renderizado de Quarto.
+
+Su objetivo no es implementar una tecnología concreta.
+
+Su objetivo es proporcionar una infraestructura estable para que cada extensión pueda concentrarse en aquello que la diferencia.
+
+```{.plantuml}
+@startuml
+
+package "Core" {
+    component Engine
+    component Config
+    component Cache
+    component Filesystem
+    component MediaBag
+    component Metadata
+}
+
+Engine --> Config
+Engine --> Cache
+Engine --> Filesystem
+Engine --> MediaBag
+Engine --> Metadata
+
+@enduml
+```
+
+El componente central es `engine.lua`.
+
+Este módulo coordina el ciclo de vida completo de una extensión:
+
+1. lee la configuración;
+2. localiza los bloques que debe procesar;
+3. prepara el contenido;
+4. calcula la identidad de la compilación;
+5. consulta la caché;
+6. invoca el compilador cuando es necesario;
+7. publica el resultado mediante MediaBag.
+
+El resto de módulos proporciona servicios especializados.
+
+## Configuración
+
+`config.lua` combina la configuración por defecto de una extensión con los valores definidos en el proyecto.
+
+La configuración se obtiene desde `filter-options`.
+
+```yaml
+filter-options:
+  plantuml:
+    server: http://javier:1025
+    cache: true
+    styles:
+      - resources/plantuml/iasi.puml
+```
+
+El núcleo no interpreta el significado tecnológico de cada opción.
+
+Se limita a leer, normalizar y entregar los valores a la extensión.
+
+## Metadatos
+
+`metadata.lua` transforma los valores recibidos desde Pandoc en tipos Lua utilizables por el resto del framework.
+
+Esto resulta necesario porque los metadatos pueden llegar representados como:
+
+- texto;
+- listas;
+- valores booleanos;
+- estructuras Pandoc;
+- objetos anidados.
+
+El módulo evita que cada extensión tenga que resolver estas conversiones por separado.
+
+## Caché
+
+`cache.lua` gestiona la reutilización de resultados previamente generados.
+
+Cada recurso se identifica mediante un hash calculado a partir de los elementos que determinan su salida.
+
+```text
+código fuente
++ configuración relevante
++ formato
++ versión de la extensión
+= identidad de la compilación
+```
+
+La caché admite tres modos:
+
+- `true`: reutiliza y actualiza la caché;
+- `false`: compila siempre;
+- `clean`: limpia la caché y continúa funcionando como `true`.
+
+## Sistema de archivos
+
+`filesystem.lua` concentra las operaciones de lectura, escritura, comprobación y limpieza de archivos.
+
+Esta separación evita distribuir llamadas directas a `io.open`, `os.remove` o `pandoc.system.make_directory` por todo el framework.
+
+También permite centralizar el tratamiento de errores y mantener un comportamiento uniforme.
+
+## MediaBag
+
+`mediabag.lua` incorpora los recursos generados al MediaBag de Pandoc.
+
+Gracias a este mecanismo, la extensión no necesita copiar imágenes manualmente al directorio de salida.
+
+El recurso se registra en memoria y Pandoc se encarga de integrarlo en el formato final.
+
+```{.plantuml}
+@startuml
+
+rectangle "Contenido generado" as content
+component "MediaBag" as bag
+rectangle "Documento HTML" as html
+rectangle "Documento PDF" as pdf
+
+content --> bag
+bag --> html
+bag --> pdf
+
+@enduml
+```
+
+## Ausencia de conocimiento específico
+
+El núcleo no sabe:
+
+- qué es PlantUML;
+- cómo se construye una petición HTTP;
+- qué estilos se aplican;
+- qué formatos soporta cada extensión;
+- qué herramienta produce el resultado.
+
+Solo conoce un contrato.
+
+La extensión debe proporcionar un compilador capaz de:
+
+- preparar el contenido, si es necesario;
+- compilarlo;
+- devolver el tipo MIME;
+- devolver el recurso generado.
+
+Esta frontera mantiene el núcleo pequeño, estable y reutilizable.

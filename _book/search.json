@@ -45,6 +45,401 @@
     ]
   },
   {
+    "objectID": "chapters/01-origin/02-evolution.html",
+    "href": "chapters/01-origin/02-evolution.html",
+    "title": "4  La evolución",
+    "section": "",
+    "text": "4.1 Versiones funcionales\nLa primera implementación no pretendía construir un framework.\nSu objetivo era mucho más modesto: detectar un bloque PlantUML dentro de un documento Quarto, enviarlo a un servidor y sustituirlo por la imagen generada.\nEse primer filtro permitió validar la idea esencial.\nEl proceso funcionaba, pero la implementación concentraba demasiadas responsabilidades en un único archivo.\nEl filtro:\nEra una solución válida para demostrar el concepto, pero difícil de ampliar y mantener.\nEn lugar de sustituir inmediatamente cada implementación, se conservaron varias versiones sucesivas del filtro.\nCada versión introducía una capacidad concreta y permitía comprobar su comportamiento antes de continuar.\nEl proceso general fue:\nEsta estrategia permitió avanzar sin perder una referencia funcional.\nCuando una nueva versión fallaba, la anterior seguía disponible para comparar comportamientos, recuperar decisiones o identificar regresiones.\nLas versiones no constituían una arquitectura planificada de antemano.\nEran escalones de aprendizaje.",
+    "crumbs": [
+      "Inicio",
+      "Origen",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>La evolución</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/01-origin/02-evolution.html#la-configuración",
+    "href": "chapters/01-origin/02-evolution.html#la-configuración",
+    "title": "4  La evolución",
+    "section": "4.2 La configuración",
+    "text": "4.2 La configuración\nUna de las primeras mejoras consistió en separar la configuración del código.\nEl servidor, el formato de salida y el comportamiento de la caché dejaron de estar fijados dentro del filtro y pasaron a definirse en el proyecto Quarto.\nfilter-options:\n  plantuml:\n    server: http://javier:1025\n    cache: true\nEsta separación permitió reutilizar la misma extensión en distintos proyectos sin modificar su implementación.\nTambién introdujo una distinción importante:\n\nel filtro define el comportamiento;\nel proyecto define las decisiones de uso.",
+    "crumbs": [
+      "Inicio",
+      "Origen",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>La evolución</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/01-origin/02-evolution.html#la-caché",
+    "href": "chapters/01-origin/02-evolution.html#la-caché",
+    "title": "4  La evolución",
+    "section": "4.3 La caché",
+    "text": "4.3 La caché\nLa generación de diagramas mediante un servicio externo añadía un coste innecesario cuando el código fuente no había cambiado.\nLa solución fue incorporar una caché persistente basada en el contenido.\n\nLa identidad de una compilación no depende del nombre del archivo ni del documento que contiene el bloque.\nDepende de los elementos que determinan el resultado:\n\ncódigo PlantUML;\nestilos aplicados;\nservidor;\nformato;\nversión de la extensión.\n\nEsto permite reutilizar el mismo diagrama en distintos documentos y reconstruir únicamente aquello que ha cambiado.",
+    "crumbs": [
+      "Inicio",
+      "Origen",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>La evolución</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/01-origin/02-evolution.html#los-estilos",
+    "href": "chapters/01-origin/02-evolution.html#los-estilos",
+    "title": "4  La evolución",
+    "section": "4.4 Los estilos",
+    "text": "4.4 Los estilos\nEl siguiente paso fue separar el contenido del diagrama de su identidad visual.\nLos colores, bordes, tipografías y formas comunes se trasladaron a una librería PlantUML independiente.\nfilter-options:\n  plantuml:\n    styles:\n      - resources/plantuml/iasi.puml\nLa extensión incorpora el contenido de esos estilos antes de compilar el diagrama.\nDe esta forma, el autor describe la estructura y las relaciones, mientras que el proyecto controla su presentación.\nUn cambio en iasi.puml modifica automáticamente la identidad de la compilación y genera una nueva entrada de caché.",
+    "crumbs": [
+      "Inicio",
+      "Origen",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>La evolución</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/01-origin/02-evolution.html#del-get-al-post",
+    "href": "chapters/01-origin/02-evolution.html#del-get-al-post",
+    "title": "4  La evolución",
+    "section": "4.5 Del GET al POST",
+    "text": "4.5 Del GET al POST\nLa primera comunicación con PlantUML codificaba el diagrama dentro de la URL.\nEra una solución sencilla y suficiente para diagramas pequeños.\nSin embargo, al incorporar la librería de estilos, el contenido enviado creció hasta superar el límite admitido por el servidor HTTP.\nGET /svg/&lt;diagrama codificado&gt;\nEl servidor respondió con un error 414 URI Too Long.\nLa solución no consistió en reducir los estilos ni en trasladarlos al contenedor de PlantUML.\nEl servidor debía seguir siendo infraestructura genérica, ajena a los recursos del libro.\nLa comunicación se cambió a una petición POST:\nPOST /png\n\n&lt;código PlantUML completo&gt;\nEl código y los estilos viajan en el cuerpo de la petición, mientras que el servidor continúa limitándose a compilar el contenido recibido.",
+    "crumbs": [
+      "Inicio",
+      "Origen",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>La evolución</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/01-origin/02-evolution.html#el-formato-de-salida",
+    "href": "chapters/01-origin/02-evolution.html#el-formato-de-salida",
+    "title": "4  La evolución",
+    "section": "4.6 El formato de salida",
+    "text": "4.6 El formato de salida\nLa primera implementación utilizaba SVG.\nEse formato funcionaba correctamente en HTML, pero la generación de PDF exigía una herramienta adicional para convertirlo.\nPara evitar dependencias innecesarias, PNG pasó a ser el formato predeterminado.\nreturn {\n  enabled = true,\n  server = \"http://javier:1025\",\n  format = \"png\",\n  cache = true,\n  styles = {}\n}\nSVG continúa disponible como opción explícita, pero PNG proporciona una salida compatible con HTML, PDF y otros formatos de Quarto sin pasos adicionales.",
+    "crumbs": [
+      "Inicio",
+      "Origen",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>La evolución</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/01-origin/02-evolution.html#la-separación-de-responsabilidades",
+    "href": "chapters/01-origin/02-evolution.html#la-separación-de-responsabilidades",
+    "title": "4  La evolución",
+    "section": "4.7 La separación de responsabilidades",
+    "text": "4.7 La separación de responsabilidades\nA medida que aparecían nuevas capacidades, algunas dejaron de pertenecer exclusivamente a PlantUML.\nLa configuración, la caché, el acceso al sistema de archivos y la publicación mediante MediaBag podían reutilizarse en otras extensiones.\nEsos componentes se extrajeron a un núcleo compartido.\n\nPlantUML conservó únicamente aquello que le era propio:\n\npreparar el código;\naplicar los estilos;\ninvocar el servidor;\ninterpretar el formato de salida.\n\nEl núcleo asumió las responsabilidades comunes.",
+    "crumbs": [
+      "Inicio",
+      "Origen",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>La evolución</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/01-origin/02-evolution.html#el-punto-de-inflexión",
+    "href": "chapters/01-origin/02-evolution.html#el-punto-de-inflexión",
+    "title": "4  La evolución",
+    "section": "4.8 El punto de inflexión",
+    "text": "4.8 El punto de inflexión\nEl cambio decisivo no se produjo al añadir una función concreta.\nSe produjo cuando la implementación dejó de responder únicamente a esta pregunta:\n\n¿Cómo generamos diagramas PlantUML desde Quarto?\n\ny comenzó a responder a otra:\n\n¿Qué partes de esta solución pueden reutilizarse para integrar otras herramientas?\n\nEn ese momento, el filtro dejó de ser una pieza aislada.\nHabía aparecido una arquitectura con:\n\nun núcleo compartido;\nextensiones independientes;\nconfiguración uniforme;\ncaché persistente;\nplantillas de desarrollo;\ny un ciclo de vida común.\n\nEl framework no fue el punto de partida.\nFue el resultado de la evolución.",
+    "crumbs": [
+      "Inicio",
+      "Origen",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>La evolución</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/01-origin/03-framework.html",
+    "href": "chapters/01-origin/03-framework.html",
+    "title": "5  Del filtro al framework",
+    "section": "",
+    "text": "5.1 Un cambio de perspectiva\nDurante buena parte del desarrollo continuamos hablando del filtro PlantUML.\nEra una descripción correcta.\nEl objetivo seguía siendo integrar PlantUML dentro del proceso de construcción de Quarto.\nSin embargo, el código comenzó a contar una historia diferente.\nCada nueva funcionalidad incorporada obligaba a responder una pregunta.\n¿Pertenece realmente a PlantUML?\nEn muchos casos la respuesta era negativa.\nLa gestión de la configuración.\nLa caché.\nEl acceso al sistema de archivos.\nLa publicación de recursos mediante MediaBag.\nLa gestión del ciclo de vida de un filtro.\nNada de ello era específico de PlantUML.\nTodas esas responsabilidades podían reutilizarse para integrar cualquier otra herramienta.\nEl proyecto dejó entonces de crecer horizontalmente.\nComenzó a reorganizarse verticalmente.\nLas responsabilidades comunes se trasladaron a un núcleo compartido y PlantUML conservó únicamente aquello que le era propio.",
+    "crumbs": [
+      "Inicio",
+      "Origen",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Del filtro al framework</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/01-origin/03-framework.html#la-inversión-de-dependencias",
+    "href": "chapters/01-origin/03-framework.html#la-inversión-de-dependencias",
+    "title": "5  Del filtro al framework",
+    "section": "5.2 La inversión de dependencias",
+    "text": "5.2 La inversión de dependencias\nLa consecuencia más importante de esta reorganización fue que el núcleo dejó de conocer PlantUML.\nLa dependencia cambió de dirección.\nAntes:\nCore\n └── PlantUML\nAhora:\nPlantUML\n └── Core\nCada extensión utiliza los servicios del núcleo, pero el núcleo permanece completamente ajeno a las tecnologías concretas.\nEsta inversión de dependencias permite incorporar nuevas extensiones sin modificar la infraestructura existente.",
+    "crumbs": [
+      "Inicio",
+      "Origen",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Del filtro al framework</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/01-origin/03-framework.html#una-extensión-deja-de-ser-un-filtro",
+    "href": "chapters/01-origin/03-framework.html#una-extensión-deja-de-ser-un-filtro",
+    "title": "5  Del filtro al framework",
+    "section": "5.3 Una extensión deja de ser un filtro",
+    "text": "5.3 Una extensión deja de ser un filtro\nA partir de ese momento, desarrollar una nueva integración dejó de consistir en copiar código existente.\nBastaba con implementar cuatro responsabilidades.\n\nconfiguración por defecto;\npreparación del contenido;\ncompilación;\ninicialización de la extensión.\n\nTodo lo demás ya era proporcionado por el núcleo.\nEl coste de desarrollar una nueva extensión disminuyó de forma considerable.",
+    "crumbs": [
+      "Inicio",
+      "Origen",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Del filtro al framework</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/01-origin/03-framework.html#el-framework",
+    "href": "chapters/01-origin/03-framework.html#el-framework",
+    "title": "5  Del filtro al framework",
+    "section": "5.4 El framework",
+    "text": "5.4 El framework\nEn este punto apareció una conclusión evidente.\nEl proyecto ya no estaba resolviendo únicamente la integración de PlantUML.\nHabía surgido una infraestructura reutilizable para integrar herramientas externas en Quarto.\nPlantUML se convirtió simplemente en la primera implementación del modelo.\nNada impedía desarrollar nuevas extensiones para otras tecnologías reutilizando exactamente el mismo ciclo de vida.",
+    "crumbs": [
+      "Inicio",
+      "Origen",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Del filtro al framework</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/01-origin/03-framework.html#una-arquitectura-emergente",
+    "href": "chapters/01-origin/03-framework.html#una-arquitectura-emergente",
+    "title": "5  Del filtro al framework",
+    "section": "5.5 Una arquitectura emergente",
+    "text": "5.5 Una arquitectura emergente\nEl aspecto más interesante del proyecto es que esta arquitectura nunca fue diseñada completamente desde el principio.\nFue apareciendo como consecuencia directa del desarrollo.\nCada refactorización eliminó una responsabilidad específica.\nCada extracción identificó un componente reutilizable.\nCada nueva versión redujo el acoplamiento entre módulos.\nEl framework no nació de un ejercicio de diseño previo.\nNació del propio proceso de construcción.\nEse hecho resulta especialmente relevante porque demuestra una idea que aparecerá de forma recurrente a lo largo de IASI.\n\nUna buena arquitectura no siempre se diseña antes de escribir el código.\nEn ocasiones aparece como consecuencia natural de comprender progresivamente el problema que estamos resolviendo.\n\nEl Quarto Extensions Framework constituye un ejemplo completo de esa evolución.",
+    "crumbs": [
+      "Inicio",
+      "Origen",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Del filtro al framework</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/02-architecture/index.html",
+    "href": "chapters/02-architecture/index.html",
+    "title": "Arquitectura",
+    "section": "",
+    "text": "El Quarto Extensions Framework organiza la integración de herramientas externas mediante una arquitectura basada en un núcleo compartido y extensiones independientes.\nEl núcleo proporciona las capacidades comunes:\n\nlectura de configuración;\ngestión de caché;\nacceso al sistema de archivos;\npublicación de recursos;\nciclo de vida de la extensión.\n\nCada extensión implementa únicamente aquello que pertenece a su tecnología.\nPlantUML, por ejemplo, se encarga de:\n\npreparar el código fuente;\naplicar los estilos configurados;\ninvocar el servidor;\ndeterminar el tipo MIME de la salida.\n\nLa separación queda representada así:\n```{.plantuml} @startuml\npackage “Extensions” {\npackage “Core” { component Engine component Config component Cache component Filesystem component MediaBag component Metadata }\npackage “PlantUML” { component Bootstrap component Compiler component Defaults file “iasi.puml” as Style } }\nBootstrap –&gt; Engine Bootstrap –&gt; Compiler Bootstrap –&gt; Defaults\nEngine –&gt; Config Engine –&gt; Cache Engine –&gt; Filesystem Engine –&gt; MediaBag Engine –&gt; Metadata Engine –&gt; Compiler\nCompiler –&gt; Style\n@enduml",
+    "crumbs": [
+      "Inicio",
+      "Arquitectura"
+    ]
+  },
+  {
+    "objectID": "chapters/02-architecture/01-structure.html",
+    "href": "chapters/02-architecture/01-structure.html",
+    "title": "6  Estructura del framework",
+    "section": "",
+    "text": "El Quarto Extensions Framework organiza sus componentes en dos niveles claramente diferenciados.\n\nUn núcleo compartido (Core), responsable de proporcionar la infraestructura común.\nUn conjunto de extensiones independientes, cada una especializada en una tecnología concreta.\n\nLa estructura general del proyecto es la siguiente.\n```{.plantuml} @startuml\nfolder “extensions” {\nfolder \"core\" {\n    file \"engine.lua\"\n    file \"config.lua\"\n    file \"cache.lua\"\n    file \"filesystem.lua\"\n    file \"mediabag.lua\"\n    file \"metadata.lua\"\n}\n\nfolder \"plantuml\" {\n    file \"plantuml.lua\"\n    file \"compiler.lua\"\n    file \"defaults.lua\"\n}\n}\n@enduml",
+    "crumbs": [
+      "Inicio",
+      "Arquitectura",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Estructura del framework</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/02-architecture/02-core.html",
+    "href": "chapters/02-architecture/02-core.html",
+    "title": "7  El núcleo",
+    "section": "",
+    "text": "7.1 Configuración\nEl núcleo contiene las capacidades comunes que necesita una extensión para participar en el proceso de renderizado de Quarto.\nSu objetivo no es implementar una tecnología concreta.\nSu objetivo es proporcionar una infraestructura estable para que cada extensión pueda concentrarse en aquello que la diferencia.\nEl componente central es engine.lua.\nEste módulo coordina el ciclo de vida completo de una extensión:\nEl resto de módulos proporciona servicios especializados.\nconfig.lua combina la configuración por defecto de una extensión con los valores definidos en el proyecto.\nLa configuración se obtiene desde filter-options.\nEl núcleo no interpreta el significado tecnológico de cada opción.\nSe limita a leer, normalizar y entregar los valores a la extensión.",
+    "crumbs": [
+      "Inicio",
+      "Arquitectura",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>El núcleo</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/02-architecture/02-core.html#configuración",
+    "href": "chapters/02-architecture/02-core.html#configuración",
+    "title": "7  El núcleo",
+    "section": "",
+    "text": "filter-options:\n  plantuml:\n    server: http://javier:1025\n    cache: true\n    styles:\n      - resources/plantuml/iasi.puml",
+    "crumbs": [
+      "Inicio",
+      "Arquitectura",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>El núcleo</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/02-architecture/02-core.html#metadatos",
+    "href": "chapters/02-architecture/02-core.html#metadatos",
+    "title": "7  El núcleo",
+    "section": "7.2 Metadatos",
+    "text": "7.2 Metadatos\nmetadata.lua transforma los valores recibidos desde Pandoc en tipos Lua utilizables por el resto del framework.\nEsto resulta necesario porque los metadatos pueden llegar representados como:\n\ntexto;\nlistas;\nvalores booleanos;\nestructuras Pandoc;\nobjetos anidados.\n\nEl módulo evita que cada extensión tenga que resolver estas conversiones por separado.",
+    "crumbs": [
+      "Inicio",
+      "Arquitectura",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>El núcleo</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/02-architecture/02-core.html#caché",
+    "href": "chapters/02-architecture/02-core.html#caché",
+    "title": "7  El núcleo",
+    "section": "7.3 Caché",
+    "text": "7.3 Caché\ncache.lua gestiona la reutilización de resultados previamente generados.\nCada recurso se identifica mediante un hash calculado a partir de los elementos que determinan su salida.\ncódigo fuente\n+ configuración relevante\n+ formato\n+ versión de la extensión\n= identidad de la compilación\nLa caché admite tres modos:\n\ntrue: reutiliza y actualiza la caché;\nfalse: compila siempre;\nclean: limpia la caché y continúa funcionando como true.",
+    "crumbs": [
+      "Inicio",
+      "Arquitectura",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>El núcleo</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/02-architecture/02-core.html#sistema-de-archivos",
+    "href": "chapters/02-architecture/02-core.html#sistema-de-archivos",
+    "title": "7  El núcleo",
+    "section": "7.4 Sistema de archivos",
+    "text": "7.4 Sistema de archivos\nfilesystem.lua concentra las operaciones de lectura, escritura, comprobación y limpieza de archivos.\nEsta separación evita distribuir llamadas directas a io.open, os.remove o pandoc.system.make_directory por todo el framework.\nTambién permite centralizar el tratamiento de errores y mantener un comportamiento uniforme.",
+    "crumbs": [
+      "Inicio",
+      "Arquitectura",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>El núcleo</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/02-architecture/02-core.html#mediabag",
+    "href": "chapters/02-architecture/02-core.html#mediabag",
+    "title": "7  El núcleo",
+    "section": "7.5 MediaBag",
+    "text": "7.5 MediaBag\nmediabag.lua incorpora los recursos generados al MediaBag de Pandoc.\nGracias a este mecanismo, la extensión no necesita copiar imágenes manualmente al directorio de salida.\nEl recurso se registra en memoria y Pandoc se encarga de integrarlo en el formato final.",
+    "crumbs": [
+      "Inicio",
+      "Arquitectura",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>El núcleo</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/02-architecture/02-core.html#ausencia-de-conocimiento-específico",
+    "href": "chapters/02-architecture/02-core.html#ausencia-de-conocimiento-específico",
+    "title": "7  El núcleo",
+    "section": "7.6 Ausencia de conocimiento específico",
+    "text": "7.6 Ausencia de conocimiento específico\nEl núcleo no sabe:\n\nqué es PlantUML;\ncómo se construye una petición HTTP;\nqué estilos se aplican;\nqué formatos soporta cada extensión;\nqué herramienta produce el resultado.\n\nSolo conoce un contrato.\nLa extensión debe proporcionar un compilador capaz de:\n\npreparar el contenido, si es necesario;\ncompilarlo;\ndevolver el tipo MIME;\ndevolver el recurso generado.\n\nEsta frontera mantiene el núcleo pequeño, estable y reutilizable.",
+    "crumbs": [
+      "Inicio",
+      "Arquitectura",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>El núcleo</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/02-architecture/03-extensions.html",
+    "href": "chapters/02-architecture/03-extensions.html",
+    "title": "8  Las extensiones",
+    "section": "",
+    "text": "8.1 Bootstrap\nUna extensión constituye la unidad funcional del framework.\nCada extensión encapsula el conocimiento necesario para integrar una tecnología concreta dentro del proceso de construcción de Quarto.\nEl núcleo proporciona la infraestructura.\nLa extensión aporta el comportamiento específico.\nTodas las extensiones siguen la misma organización.\nCada archivo tiene una responsabilidad claramente definida.\nEl bootstrap constituye el punto de entrada de la extensión.\nSu función consiste en localizar el núcleo y registrar los componentes propios de la extensión.\nNo contiene lógica de negocio.\nSimplemente describe cómo debe construirse la extensión.\nGracias a este mecanismo todas las extensiones presentan exactamente el mismo ciclo de vida.",
+    "crumbs": [
+      "Inicio",
+      "Arquitectura",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Las extensiones</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/02-architecture/03-extensions.html#defaults",
+    "href": "chapters/02-architecture/03-extensions.html#defaults",
+    "title": "8  Las extensiones",
+    "section": "8.2 Defaults",
+    "text": "8.2 Defaults\nCada extensión define su propia configuración inicial.\nPor ejemplo, PlantUML establece como valores predeterminados:\n\nservidor de compilación;\nformato de salida;\ncomportamiento de la caché;\nlista inicial de estilos.\n\nEstos valores pueden modificarse posteriormente desde el proyecto Quarto.\nfilter-options:\n  plantuml:\n    server: http://localhost:8080\n    cache: true\nLa configuración del proyecto siempre tiene prioridad sobre los valores definidos por la extensión.",
+    "crumbs": [
+      "Inicio",
+      "Arquitectura",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Las extensiones</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/02-architecture/03-extensions.html#compiler",
+    "href": "chapters/02-architecture/03-extensions.html#compiler",
+    "title": "8  Las extensiones",
+    "section": "8.3 Compiler",
+    "text": "8.3 Compiler\nEl compilador es el único componente que conoce realmente la tecnología integrada.\nEn PlantUML sus responsabilidades son:\n\npreparar el código fuente;\nincorporar los estilos configurados;\nrealizar la petición HTTP al servidor;\ninterpretar la respuesta;\nindicar el tipo MIME del recurso generado.\n\nEl resto del framework permanece completamente ajeno a estos detalles.",
+    "crumbs": [
+      "Inicio",
+      "Arquitectura",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Las extensiones</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/02-architecture/03-extensions.html#independencia",
+    "href": "chapters/02-architecture/03-extensions.html#independencia",
+    "title": "8  Las extensiones",
+    "section": "8.4 Independencia",
+    "text": "8.4 Independencia\nUna consecuencia importante de este diseño es que dos extensiones distintas pueden reutilizar exactamente el mismo núcleo.\n\nEl núcleo no necesita modificarse para incorporar nuevas tecnologías.\nCada nueva extensión implementa únicamente aquello que le pertenece.",
+    "crumbs": [
+      "Inicio",
+      "Arquitectura",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Las extensiones</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/02-architecture/03-extensions.html#un-contrato-sencillo",
+    "href": "chapters/02-architecture/03-extensions.html#un-contrato-sencillo",
+    "title": "8  Las extensiones",
+    "section": "8.5 Un contrato sencillo",
+    "text": "8.5 Un contrato sencillo\nDesde el punto de vista del framework, todas las extensiones ofrecen el mismo contrato.\n\nuna configuración por defecto;\nun compilador;\nun punto de entrada.\n\nEsta simplicidad reduce el esfuerzo necesario para desarrollar nuevas integraciones y permite mantener una arquitectura uniforme independientemente de la tecnología utilizada.\nLa incorporación de una nueva extensión consiste, fundamentalmente, en implementar ese contrato y dejar que el núcleo gestione el resto del ciclo de vida.",
+    "crumbs": [
+      "Inicio",
+      "Arquitectura",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Las extensiones</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/02-architecture/04-lifecycle.html",
+    "href": "chapters/02-architecture/04-lifecycle.html",
+    "title": "9  Ciclo de vida",
+    "section": "",
+    "text": "9.1 Preparación\nTodas las extensiones del Quarto Extensions Framework siguen exactamente el mismo ciclo de ejecución.\nLa única diferencia entre ellas reside en la implementación del compilador.\nEl resto del proceso permanece invariable.\nEl proceso comienza cuando Quarto carga la extensión.\nDurante esta fase únicamente se registra la implementación y se crea el motor encargado de coordinar el resto del ciclo de vida.\nA continuación, el motor recorre el documento identificando los bloques que pertenecen a la extensión.\nPara cada bloque se ejecutan siempre las mismas etapas.\nLa extensión tiene la oportunidad de transformar el contenido antes de compilarlo.\nEn PlantUML esta fase incorpora automáticamente los estilos definidos por el proyecto.\nEl resto del framework desconoce completamente esta operación.",
+    "crumbs": [
+      "Inicio",
+      "Arquitectura",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Ciclo de vida</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/02-architecture/04-lifecycle.html#identificación",
+    "href": "chapters/02-architecture/04-lifecycle.html#identificación",
+    "title": "9  Ciclo de vida",
+    "section": "9.2 Identificación",
+    "text": "9.2 Identificación\nUna vez preparado el contenido, el núcleo calcula un identificador único.\nLa identidad depende exclusivamente de los elementos capaces de modificar el resultado.\n\ncódigo fuente;\nestilos;\nservidor;\nformato;\nversión de la extensión.\n\nEste identificador constituye la clave utilizada por la caché.",
+    "crumbs": [
+      "Inicio",
+      "Arquitectura",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Ciclo de vida</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/02-architecture/04-lifecycle.html#caché",
+    "href": "chapters/02-architecture/04-lifecycle.html#caché",
+    "title": "9  Ciclo de vida",
+    "section": "9.3 Caché",
+    "text": "9.3 Caché\nAntes de invocar la herramienta externa, el núcleo consulta si el recurso ya existe.\nCuando el contenido está disponible, el compilador no vuelve a ejecutarse.\nEn caso contrario, la extensión realiza la compilación y el resultado pasa a formar parte de la caché.\nEste mecanismo reduce significativamente el tiempo de construcción de documentos grandes.",
+    "crumbs": [
+      "Inicio",
+      "Arquitectura",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Ciclo de vida</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/02-architecture/04-lifecycle.html#compilación",
+    "href": "chapters/02-architecture/04-lifecycle.html#compilación",
+    "title": "9  Ciclo de vida",
+    "section": "9.4 Compilación",
+    "text": "9.4 Compilación\nLa compilación constituye la única responsabilidad específica de la extensión.\nEn el caso de PlantUML consiste en enviar el código fuente mediante una petición HTTP POST al servidor de compilación.\nPOST /png\n\n&lt;fuente PlantUML&gt;\nEl servidor devuelve la imagen generada junto con el tipo MIME correspondiente.",
+    "crumbs": [
+      "Inicio",
+      "Arquitectura",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Ciclo de vida</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/02-architecture/04-lifecycle.html#publicación",
+    "href": "chapters/02-architecture/04-lifecycle.html#publicación",
+    "title": "9  Ciclo de vida",
+    "section": "9.5 Publicación",
+    "text": "9.5 Publicación\nFinalmente el núcleo registra el recurso en el MediaBag de Pandoc.\nA partir de ese momento el documento puede referenciar la imagen sin preocuparse de su ubicación física.\nPandoc se encarga de incorporarla automáticamente al formato de salida correspondiente.",
+    "crumbs": [
+      "Inicio",
+      "Arquitectura",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Ciclo de vida</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/02-architecture/04-lifecycle.html#responsabilidades",
+    "href": "chapters/02-architecture/04-lifecycle.html#responsabilidades",
+    "title": "9  Ciclo de vida",
+    "section": "9.6 Responsabilidades",
+    "text": "9.6 Responsabilidades\nEl ciclo de vida pone de manifiesto la distribución de responsabilidades dentro del framework.\n\n\n\nNúcleo\nExtensión\n\n\n\n\nLeer configuración\nPreparar el contenido\n\n\nCalcular la identidad\nCompilar\n\n\nGestionar la caché\nDeterminar el tipo MIME\n\n\nPublicar recursos\nInterpretar la tecnología integrada\n\n\n\nEsta separación permite incorporar nuevas extensiones sin modificar el motor del framework.\nCada implementación aporta únicamente aquello que la hace diferente.\nTodo lo demás ya forma parte de la infraestructura común.",
+    "crumbs": [
+      "Inicio",
+      "Arquitectura",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Ciclo de vida</span>"
+    ]
+  },
+  {
     "objectID": "licenses.html",
     "href": "licenses.html",
     "title": "Licencias",

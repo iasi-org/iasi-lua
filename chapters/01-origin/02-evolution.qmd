@@ -1,0 +1,272 @@
+# La evolución
+
+La primera implementación no pretendía construir un framework.
+
+Su objetivo era mucho más modesto: detectar un bloque PlantUML dentro de un documento Quarto, enviarlo a un servidor y sustituirlo por la imagen generada.
+
+Ese primer filtro permitió validar la idea esencial.
+
+```{.plantuml}
+@startuml
+
+rectangle "Documento Quarto" as qmd
+rectangle "Filtro PlantUML" as filter
+cloud "PlantUML Server" as server
+file "Diagrama" as image
+
+qmd --> filter : bloque PlantUML
+filter --> server : código fuente
+server --> filter : imagen
+filter --> image : publicación
+
+@enduml
+```
+
+El proceso funcionaba, pero la implementación concentraba demasiadas responsabilidades en un único archivo.
+
+El filtro:
+
+- detectaba los bloques;
+- interpretaba la configuración;
+- construía la petición HTTP;
+- validaba el formato;
+- generaba el identificador del recurso;
+- incorporaba la imagen a Pandoc;
+- y resolvía atributos como el título o el tamaño.
+
+Era una solución válida para demostrar el concepto, pero difícil de ampliar y mantener.
+
+## Versiones funcionales
+
+En lugar de sustituir inmediatamente cada implementación, se conservaron varias versiones sucesivas del filtro.
+
+Cada versión introducía una capacidad concreta y permitía comprobar su comportamiento antes de continuar.
+
+El proceso general fue:
+
+```{.plantuml}
+@startuml
+
+left to right direction
+
+rectangle "Filtro mínimo" as v1
+rectangle "Configuración" as v2
+rectangle "MediaBag" as v3
+rectangle "Caché" as v4
+rectangle "Core compartido" as v5
+rectangle "Framework" as framework
+
+v1 --> v2
+v2 --> v3
+v3 --> v4
+v4 --> v5
+v5 --> framework
+
+@enduml
+```
+
+Esta estrategia permitió avanzar sin perder una referencia funcional.
+
+Cuando una nueva versión fallaba, la anterior seguía disponible para comparar comportamientos, recuperar decisiones o identificar regresiones.
+
+Las versiones no constituían una arquitectura planificada de antemano.
+
+Eran escalones de aprendizaje.
+
+## La configuración
+
+Una de las primeras mejoras consistió en separar la configuración del código.
+
+El servidor, el formato de salida y el comportamiento de la caché dejaron de estar fijados dentro del filtro y pasaron a definirse en el proyecto Quarto.
+
+```yaml
+filter-options:
+  plantuml:
+    server: http://javier:1025
+    cache: true
+```
+
+Esta separación permitió reutilizar la misma extensión en distintos proyectos sin modificar su implementación.
+
+También introdujo una distinción importante:
+
+- el filtro define el comportamiento;
+- el proyecto define las decisiones de uso.
+
+## La caché
+
+La generación de diagramas mediante un servicio externo añadía un coste innecesario cuando el código fuente no había cambiado.
+
+La solución fue incorporar una caché persistente basada en el contenido.
+
+```{.plantuml}
+@startuml
+
+start
+
+:Preparar código fuente;
+:Calcular SHA1;
+
+if (¿Existe en caché?) then (sí)
+  :Recuperar imagen;
+else (no)
+  :Invocar PlantUML;
+  :Guardar imagen y hash;
+endif
+
+:Publicar recurso;
+stop
+
+@enduml
+```
+
+La identidad de una compilación no depende del nombre del archivo ni del documento que contiene el bloque.
+
+Depende de los elementos que determinan el resultado:
+
+- código PlantUML;
+- estilos aplicados;
+- servidor;
+- formato;
+- versión de la extensión.
+
+Esto permite reutilizar el mismo diagrama en distintos documentos y reconstruir únicamente aquello que ha cambiado.
+
+## Los estilos
+
+El siguiente paso fue separar el contenido del diagrama de su identidad visual.
+
+Los colores, bordes, tipografías y formas comunes se trasladaron a una librería PlantUML independiente.
+
+```yaml
+filter-options:
+  plantuml:
+    styles:
+      - resources/plantuml/iasi.puml
+```
+
+La extensión incorpora el contenido de esos estilos antes de compilar el diagrama.
+
+De esta forma, el autor describe la estructura y las relaciones, mientras que el proyecto controla su presentación.
+
+Un cambio en `iasi.puml` modifica automáticamente la identidad de la compilación y genera una nueva entrada de caché.
+
+## Del GET al POST
+
+La primera comunicación con PlantUML codificaba el diagrama dentro de la URL.
+
+Era una solución sencilla y suficiente para diagramas pequeños.
+
+Sin embargo, al incorporar la librería de estilos, el contenido enviado creció hasta superar el límite admitido por el servidor HTTP.
+
+```text
+GET /svg/<diagrama codificado>
+```
+
+El servidor respondió con un error `414 URI Too Long`.
+
+La solución no consistió en reducir los estilos ni en trasladarlos al contenedor de PlantUML.
+
+El servidor debía seguir siendo infraestructura genérica, ajena a los recursos del libro.
+
+La comunicación se cambió a una petición POST:
+
+```text
+POST /png
+
+<código PlantUML completo>
+```
+
+El código y los estilos viajan en el cuerpo de la petición, mientras que el servidor continúa limitándose a compilar el contenido recibido.
+
+## El formato de salida
+
+La primera implementación utilizaba SVG.
+
+Ese formato funcionaba correctamente en HTML, pero la generación de PDF exigía una herramienta adicional para convertirlo.
+
+Para evitar dependencias innecesarias, PNG pasó a ser el formato predeterminado.
+
+```lua
+return {
+  enabled = true,
+  server = "http://javier:1025",
+  format = "png",
+  cache = true,
+  styles = {}
+}
+```
+
+SVG continúa disponible como opción explícita, pero PNG proporciona una salida compatible con HTML, PDF y otros formatos de Quarto sin pasos adicionales.
+
+## La separación de responsabilidades
+
+A medida que aparecían nuevas capacidades, algunas dejaron de pertenecer exclusivamente a PlantUML.
+
+La configuración, la caché, el acceso al sistema de archivos y la publicación mediante MediaBag podían reutilizarse en otras extensiones.
+
+Esos componentes se extrajeron a un núcleo compartido.
+
+```{.plantuml}
+@startuml
+
+package "Core" {
+  component Config
+  component Cache
+  component Filesystem
+  component MediaBag
+  component Engine
+}
+
+package "PlantUML" {
+  component Compiler
+  component Defaults
+  component Bootstrap
+}
+
+Bootstrap --> Engine
+Engine --> Config
+Engine --> Cache
+Engine --> Filesystem
+Engine --> MediaBag
+Engine --> Compiler
+Bootstrap --> Defaults
+
+@enduml
+```
+
+PlantUML conservó únicamente aquello que le era propio:
+
+- preparar el código;
+- aplicar los estilos;
+- invocar el servidor;
+- interpretar el formato de salida.
+
+El núcleo asumió las responsabilidades comunes.
+
+## El punto de inflexión
+
+El cambio decisivo no se produjo al añadir una función concreta.
+
+Se produjo cuando la implementación dejó de responder únicamente a esta pregunta:
+
+> ¿Cómo generamos diagramas PlantUML desde Quarto?
+
+y comenzó a responder a otra:
+
+> ¿Qué partes de esta solución pueden reutilizarse para integrar otras herramientas?
+
+En ese momento, el filtro dejó de ser una pieza aislada.
+
+Había aparecido una arquitectura con:
+
+- un núcleo compartido;
+- extensiones independientes;
+- configuración uniforme;
+- caché persistente;
+- plantillas de desarrollo;
+- y un ciclo de vida común.
+
+El framework no fue el punto de partida.
+
+Fue el resultado de la evolución.

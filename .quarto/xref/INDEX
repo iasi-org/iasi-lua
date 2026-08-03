@@ -22,5 +22,26 @@
   },
   "./licenses.qmd": {
     "licenses.html": "ca08943e"
+  },
+  "chapters/01-origin/02-evolution.qmd": {
+    "02-evolution.html": "27589db2"
+  },
+  "chapters/01-origin/03-framework.qmd": {
+    "03-framework.html": "8dd36dc5"
+  },
+  "chapters/02-architecture/index.qmd": {
+    "index.html": "11b3d587"
+  },
+  "chapters/02-architecture/01-structure.qmd": {
+    "01-structure.html": "22ff9121"
+  },
+  "chapters/02-architecture/02-core.qmd": {
+    "02-core.html": "042a093a"
+  },
+  "chapters/02-architecture/03-extensions.qmd": {
+    "03-extensions.html": "203c990c"
+  },
+  "chapters/02-architecture/04-lifecycle.qmd": {
+    "04-lifecycle.html": "7ef2672c"
   }
 }
