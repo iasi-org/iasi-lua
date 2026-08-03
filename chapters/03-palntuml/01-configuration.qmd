@@ -1,0 +1,218 @@
+# Configuración
+
+La extensión PlantUML se configura desde `_quarto.yml` mediante dos bloques diferentes.
+
+El primero indica a Quarto qué filtro debe cargar.
+
+```yaml
+filters:
+  - extensions/plantuml/plantuml.lua
+```
+
+El segundo define las opciones específicas de la extensión.
+
+```yaml
+filter-options:
+  plantuml:
+    server: http://javier:1025
+    cache: true
+    styles:
+      - resources/plantuml/iasi.puml
+```
+
+Esta separación distingue claramente dos responsabilidades:
+
+- `filters` declara qué extensiones participan en el renderizado;
+- `filter-options` define cómo debe comportarse cada una.
+
+## Configuración por defecto
+
+La extensión incluye una configuración inicial en `defaults.lua`.
+
+```lua
+return {
+  enabled = true,
+  server = "http://javier:1025",
+  format = "png",
+  cache = true,
+  styles = {}
+}
+```
+
+Gracias a estos valores, la configuración del proyecto puede mantenerse reducida.
+
+```yaml
+filter-options:
+  plantuml:
+    server: http://javier:1025
+```
+
+Todo aquello que no se indique explícitamente se obtiene de los valores por defecto.
+
+## Opciones disponibles
+
+| Opción | Tipo | Valor por defecto | Descripción |
+|---|---:|---:|---|
+| `enabled` | booleano | `true` | Activa o desactiva la extensión. |
+| `server` | texto | servidor configurado | Dirección del PlantUML Server. |
+| `format` | texto | `png` | Formato gráfico generado. |
+| `cache` | booleano o texto | `true` | Controla el uso de la caché. |
+| `styles` | texto o lista | vacío | Archivos de estilo que se incorporan al código. |
+
+## Activación
+
+La extensión se encuentra activa de forma predeterminada.
+
+Puede deshabilitarse sin eliminarla de la lista de filtros:
+
+```yaml
+filter-options:
+  plantuml:
+    enabled: false
+```
+
+Esto resulta útil para diagnosticar problemas o comparar un documento con y sin procesamiento PlantUML.
+
+## Servidor
+
+La opción `server` identifica el servicio encargado de compilar los diagramas.
+
+```yaml
+filter-options:
+  plantuml:
+    server: http://javier:1025
+```
+
+La extensión construye el punto de acceso final añadiendo el formato solicitado.
+
+```text
+http://javier:1025/png
+```
+
+El código PlantUML se envía mediante una petición HTTP POST.
+
+El servidor no necesita conocer el proyecto, sus estilos ni la estructura del libro. Se limita a recibir código y devolver el recurso generado.
+
+```{.plantuml}
+@startuml
+
+rectangle "Proyecto Quarto" as Project
+component "Extensión PlantUML" as Extension
+cloud "PlantUML Server" as Server
+
+Project --> Extension : bloque + configuración
+Extension --> Server : POST /png\ncódigo completo
+Server --> Extension : image/png
+
+@enduml
+```
+
+## Formato
+
+PNG es el formato predeterminado.
+
+```yaml
+filter-options:
+  plantuml:
+    format: png
+```
+
+También puede solicitarse SVG:
+
+```yaml
+filter-options:
+  plantuml:
+    format: svg
+```
+
+La extensión mantiene una tabla interna que relaciona cada formato soportado con su tipo MIME.
+
+```lua
+local MIME_TYPES = {
+  png = "image/png",
+  svg = "image/svg+xml"
+}
+```
+
+Esta tabla constituye la única fuente de verdad para validar formatos y determinar el tipo de recurso devuelto.
+
+PNG se recomienda cuando el proyecto genera varios formatos de salida, especialmente HTML y PDF.
+
+SVG resulta apropiado cuando se necesita salida vectorial y el entorno dispone de las herramientas necesarias para procesarla.
+
+## Caché
+
+La opción `cache` admite tres valores.
+
+```yaml
+cache: true
+```
+
+Reutiliza los resultados existentes y almacena las nuevas compilaciones.
+
+```yaml
+cache: false
+```
+
+Ignora la caché y compila siempre.
+
+```yaml
+cache: clean
+```
+
+Limpia la caché al comenzar y continúa funcionando como `true`.
+
+El valor `clean` resulta especialmente útil durante el desarrollo de estilos o del propio compilador.
+
+No debería mantenerse como configuración habitual, ya que elimina la ventaja principal de la caché en cada renderizado.
+
+## Estilos
+
+La opción `styles` permite incorporar uno o varios archivos PlantUML antes de compilar el diagrama.
+
+```yaml
+filter-options:
+  plantuml:
+    styles:
+      - resources/plantuml/iasi.puml
+```
+
+También puede indicarse un único archivo sin utilizar una lista.
+
+```yaml
+filter-options:
+  plantuml:
+    styles: resources/plantuml/iasi.puml
+```
+
+La extensión lee el contenido de cada archivo y lo inserta después de `@startuml`.
+
+```{.plantuml}
+@startuml
+
+rectangle "Bloque original" as Source
+file "iasi.puml" as Style
+component "prepare()" as Prepare
+rectangle "Código final" as Final
+
+Source --> Prepare
+Style --> Prepare
+Prepare --> Final
+
+@enduml
+```
+
+Como los estilos pasan a formar parte del código preparado, cualquier modificación en ellos cambia automáticamente el hash de la compilación.
+
+La caché se invalida sin necesidad de mecanismos adicionales.
+
+## Configuración por bloque
+
+Algunas opciones pueden sobrescribirse en un bloque concreto.
+
+````markdown
+```{.plantuml format="svg" cache="false"}
+@startuml
+Alice -> Bob : Ejemplo
+@enduml
+```

@@ -1,0 +1,153 @@
+# El compilador
+
+El compilador constituye el único componente de la extensión que conoce realmente PlantUML.
+
+Su responsabilidad consiste en transformar un bloque PlantUML en un recurso gráfico que posteriormente será publicado por el núcleo.
+
+Todo aquello que no pertenece específicamente a PlantUML permanece fuera del compilador.
+
+## Responsabilidades
+
+El compilador realiza cinco tareas principales.
+
+1. Preparar el código fuente.
+2. Incorporar los estilos configurados.
+3. Invocar PlantUML Server.
+4. Validar la respuesta obtenida.
+5. Devolver el recurso generado y su tipo MIME.
+
+El resto del ciclo de vida es responsabilidad del núcleo del framework.
+
+```{.plantuml}
+@startuml
+
+start
+
+:Recibir código PlantUML;
+
+:Preparar contenido;
+
+:Aplicar estilos;
+
+:Enviar POST;
+
+:Recibir imagen;
+
+:Determinar MIME;
+
+stop
+
+@enduml
+```
+
+## Preparación
+
+Antes de compilar un diagrama, la extensión tiene la oportunidad de transformar el contenido recibido.
+
+En PlantUML esta fase incorpora automáticamente los archivos definidos mediante la opción `styles`.
+
+```yaml
+filter-options:
+  plantuml:
+    styles:
+      - resources/plantuml/iasi.puml
+```
+
+El contenido original del bloque permanece inalterado.
+
+La preparación genera un nuevo documento que combina el código escrito por el autor con los estilos compartidos.
+
+```{.plantuml}
+@startuml
+
+file "Bloque PlantUML" as Source
+file "iasi.puml" as Style
+
+component "prepare()" as Prepare
+
+file "Código preparado" as Result
+
+Source --> Prepare
+Style --> Prepare
+Prepare --> Result
+
+@enduml
+```
+
+Esta transformación ocurre completamente dentro de la extensión.
+
+Ni el núcleo ni el servidor conocen la existencia de los estilos.
+
+## Comunicación con PlantUML
+
+Las primeras versiones utilizaban peticiones HTTP GET.
+
+El código PlantUML se codificaba directamente en la URL.
+
+```text
+GET /png/<contenido codificado>
+```
+
+Este mecanismo funcionaba correctamente mientras los diagramas eran pequeños.
+
+Sin embargo, la incorporación automática de estilos provocó que algunas peticiones superasen el tamaño máximo admitido por el servidor HTTP.
+
+La solución consistió en utilizar HTTP POST.
+
+```text
+POST /png
+
+<código PlantUML>
+```
+
+El contenido completo del diagrama viaja ahora en el cuerpo de la petición.
+
+Esta aproximación elimina las limitaciones de longitud de la URL y mantiene completamente desacoplados el proyecto y el servidor PlantUML.
+
+## Formatos
+
+El compilador admite actualmente dos formatos de salida.
+
+- PNG
+- SVG
+
+Cada formato se asocia a un tipo MIME mediante una tabla interna.
+
+```lua
+local MIME_TYPES = {
+    png = "image/png",
+    svg = "image/svg+xml"
+}
+```
+
+Esta tabla constituye la única referencia utilizada para validar formatos y determinar el tipo MIME del recurso generado.
+
+La incorporación de un nuevo formato únicamente requiere ampliar esta estructura.
+
+## Validación
+
+Después de recibir la respuesta del servidor, el compilador verifica que el contenido obtenido sea válido.
+
+Una compilación fallida nunca produce una entrada en la caché.
+
+Esta validación evita almacenar recursos incompletos o respuestas erróneas que podrían reutilizarse posteriormente.
+
+## Independencia
+
+El compilador desconoce completamente:
+
+- la caché;
+- el sistema de archivos;
+- MediaBag;
+- la estructura del documento;
+- el resto del framework.
+
+Su contrato es deliberadamente pequeño.
+
+Recibe código fuente y configuración.
+
+Devuelve un recurso gráfico y su tipo MIME.
+
+Nada más.
+
+Esta simplicidad facilita tanto el mantenimiento como la incorporación de nuevas tecnologías siguiendo exactamente el mismo modelo.

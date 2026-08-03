@@ -1,0 +1,20 @@
+## ¿Por qué PlantUML?
+
+Quarto incorpora soporte nativo para tecnologías como **Mermaid** y **Graphviz**, lo que permite generar determinados tipos de diagramas sin necesidad de extensiones adicionales.
+
+Sin embargo, el objetivo de este proyecto era disponer de una solución única capaz de cubrir la mayor parte de la documentación técnica.
+
+PlantUML fue seleccionado por varios motivos.
+
+- Proporciona un catálogo muy amplio de diagramas, incluyendo diagramas de clases, secuencia, casos de uso, actividad, estados, componentes, despliegue, Gantt, cronogramas, mapas mentales, WBS, ER, C4 y otros muchos formatos.
+- Mantiene una sintaxis homogénea para todos ellos.
+- Dispone de una comunidad madura y una evolución estable.
+- Puede integrarse fácilmente mediante un servicio HTTP independiente.
+
+Además, PlantUML no se limita a su propia sintaxis.
+
+También es capaz de interpretar otros lenguajes de diagramación, entre ellos **Graphviz (DOT)** y **Mermaid**, permitiendo centralizar diferentes necesidades de documentación bajo una única infraestructura.
+
+Por este motivo, el **Quarto Extensions Framework** toma PlantUML como primera implementación de referencia.
+
+La elección no pretende sustituir las capacidades nativas de Quarto, sino ofrecer una alternativa unificada cuando un proyecto necesita trabajar con un conjunto amplio y diverso de diagramas.
