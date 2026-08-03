@@ -1,0 +1,22 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "PlantUML Engine",
+    "section": "",
+    "text": "1 PlantUML Engine",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>PlantUML Engine</span>"
+    ]
+  },
+  {
+    "objectID": "index.html#documentación-técnica",
+    "href": "index.html#documentación-técnica",
+    "title": "PlantUML Engine",
+    "section": "1.1 Documentación técnica",
+    "text": "1.1 Documentación técnica\nEste libro documenta la arquitectura, diseño e implementación del engine PlantUML para Quarto.\nEl objetivo del proyecto es proporcionar una integración transparente entre Quarto y PlantUML, permitiendo que los diagramas formen parte del código fuente de la documentación.\nLa documentación está organizada en cuatro bloques principales:\n\nIntroducción y filosofía.\nGuía de uso.\nArquitectura interna.\nReferencia técnica.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>PlantUML Engine</span>"
+    ]
+  }
+]

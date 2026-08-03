@@ -1,0 +1,58 @@
+project:
+  type: book
+
+profile:
+  group:
+    - [html, pdf]
+
+lang: es
+
+book:
+  title: "PlantUML Engine"
+  subtitle: "Documentación técnica"
+  author: "Javier G. Grandez"
+
+  chapters:
+    - "index.qmd"
+    
+  page-footer:
+    left: "© 2026 Javier G. Grandez"
+    right:
+      - text: "Licencias"
+        href: licenses.qmd
+
+format:
+
+  html:
+    theme: cosmo
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    code-copy: true
+    code-overflow: wrap
+
+  pdf:
+    toc: true
+    number-sections: true
+
+filters:
+  - extensions/plantuml/plantuml.lua
+
+filter-options:
+
+  plantuml:
+    enabled: true
+    server: http://javier:1025
+    format: svg
+    cache: true
+    styles:
+      - resources/plantuml/iasi.puml
+
+execute:
+  freeze: auto
+
+crossref:
+  fig-title: Figura
+  tbl-title: Tabla
+  lst-title: Listado
+  

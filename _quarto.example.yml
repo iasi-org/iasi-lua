@@ -1,0 +1,20 @@
+project:
+  type: book
+book:
+  title: "PlantUML para Quarto"
+  chapters:
+    - index.qmd
+filters:
+  - extensions/plantuml/plantuml.lua
+filter-options:
+  plantuml:
+    enabled: true
+    server: http://javier:1025
+    format: svg
+    cache: true
+    styles:
+      - extensions/plantuml/iasi.puml
+format:
+  html:
+    toc: true
+lang: es
