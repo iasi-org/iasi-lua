@@ -2,21 +2,112 @@
   {
     "objectID": "index.html",
     "href": "index.html",
-    "title": "PlantUML Engine",
+    "title": "Quarto Extensions Framework",
     "section": "",
     "text": "1 PlantUML Engine",
     "crumbs": [
+      "Inicio",
       "<span class='chapter-number'>1</span>  <span class='chapter-title'>PlantUML Engine</span>"
     ]
   },
   {
     "objectID": "index.html#documentación-técnica",
     "href": "index.html#documentación-técnica",
-    "title": "PlantUML Engine",
+    "title": "Quarto Extensions Framework",
     "section": "1.1 Documentación técnica",
     "text": "1.1 Documentación técnica\nEste libro documenta la arquitectura, diseño e implementación del engine PlantUML para Quarto.\nEl objetivo del proyecto es proporcionar una integración transparente entre Quarto y PlantUML, permitiendo que los diagramas formen parte del código fuente de la documentación.\nLa documentación está organizada en cuatro bloques principales:\n\nIntroducción y filosofía.\nGuía de uso.\nArquitectura interna.\nReferencia técnica.",
     "crumbs": [
+      "Inicio",
       "<span class='chapter-number'>1</span>  <span class='chapter-title'>PlantUML Engine</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/01-origin/index.html",
+    "href": "chapters/01-origin/index.html",
+    "title": "Origen",
+    "section": "",
+    "text": "Origen\nEste libro documenta el desarrollo del Quarto Extensions Framework, una arquitectura para construir extensiones reutilizables sobre Quarto.\nAunque el resultado final es un framework, ese nunca fue el objetivo inicial.\nEl proyecto comenzó con una necesidad muy concreta: integrar PlantUML en el proceso de generación de documentos Quarto de una forma sencilla, reproducible y completamente integrada con el resto de la documentación.\nLa primera implementación resolvía únicamente ese problema.\nSin embargo, a medida que evolucionaba el proyecto aparecieron responsabilidades comunes, patrones repetidos y componentes que podían reutilizarse.\nLa arquitectura comenzó entonces a transformarse de forma natural.\nLo que inicialmente era un filtro específico terminó convirtiéndose en un núcleo compartido capaz de soportar múltiples extensiones independientes.\nEste libro describe ese proceso.\nNo presenta una arquitectura diseñada completamente desde el principio.\nDescribe cómo una solución concreta fue evolucionando hasta convertirse en un framework reutilizable, mostrando las decisiones técnicas adoptadas, las alternativas consideradas y las lecciones aprendidas durante el desarrollo.\nLos capítulos siguientes recorren esa evolución desde el problema original hasta la arquitectura actual.",
+    "crumbs": [
+      "Inicio",
+      "Origen"
+    ]
+  },
+  {
+    "objectID": "chapters/01-origin/01-problem.html",
+    "href": "chapters/01-origin/01-problem.html",
+    "title": "3  El problema",
+    "section": "",
+    "text": "TipProyecto\n\n\n\nEste framework se desarrolla como un proyecto independiente.\nRepositorio GitHub\nhttps://github.com/&lt;organizacion/quarto-extensions-framework&gt;\nDocumentación (GitHub Pages)\nhttps://&lt;organizacion.github.io/quarto-extensions-framework&gt;\n\n\nLa documentación técnica moderna ya no está formada únicamente por texto.\nDiagramas, modelos, arquitecturas, procesos y relaciones constituyen una parte esencial del conocimiento y deben evolucionar junto con el código fuente.\nQuarto proporciona una plataforma excelente para generar documentación a partir de Markdown. Sin embargo, la integración de herramientas externas suele depender de procesos independientes, comandos manuales o soluciones específicas para cada proyecto.\nLa necesidad que dio origen a este framework apareció durante el desarrollo del libro IASI.\nEl número de diagramas comenzó a crecer rápidamente y mantener imágenes generadas manualmente dejó de ser una alternativa razonable. Cada modificación obligaba a regenerar archivos, comprobar versiones y actualizar recursos que, en realidad, deberían formar parte del propio proceso de construcción del libro.\nEl objetivo nunca fue simplemente generar diagramas.\nEl objetivo era que el autor pudiera escribir un bloque PlantUML dentro de un documento Quarto y olvidarse completamente del resto del proceso.\n\nA partir de ese momento, el sistema debía asumir toda la responsabilidad:\n\ngenerar el diagrama;\nincorporarlo al documento;\nreutilizar resultados previamente generados;\naplicar un estilo común;\nproducir resultados reproducibles;\nintegrarse de forma transparente con Quarto.\n\nDesde el punto de vista del autor, escribir un diagrama debía resultar tan natural como escribir un bloque de código.\nPronto quedó claro que el problema era mayor de lo que parecía.\nPlantUML era únicamente la primera herramienta que necesitábamos integrar. El mismo mecanismo podía resultar útil para otras tecnologías, otros formatos y otros compiladores.\nLa pregunta dejó de ser:\n\n¿Cómo integramos PlantUML en Quarto?\n\ny pasó a convertirse en otra mucho más interesante:\n\n¿Cómo puede integrarse cualquier herramienta externa en Quarto de forma uniforme, reutilizable y mantenible?\n\nResponder a esa pregunta supuso un cambio de perspectiva.\nLa implementación dejó de evolucionar como un filtro específico y comenzó a transformarse progresivamente en una infraestructura común para el desarrollo de extensiones.\nEse fue el verdadero origen del Quarto Extensions Framework.",
+    "crumbs": [
+      "Inicio",
+      "Origen",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>El problema</span>"
+    ]
+  },
+  {
+    "objectID": "licenses.html",
+    "href": "licenses.html",
+    "title": "Licencias",
+    "section": "",
+    "text": "Código fuente\nEl proyecto iasi contiene materiales de distinta naturaleza. Cada tipo de material se distribuye bajo una licencia específica.\nCopyright © 2026 Javier G. Grandez.\nEl código fuente, los scripts, las automatizaciones, las utilidades y los ejemplos ejecutables se distribuyen bajo la Licencia MIT, salvo que se indique expresamente otra licencia.\nEsto incluye, entre otros:\nLa Licencia MIT permite utilizar, copiar, modificar, integrar, publicar, distribuir, sublicenciar y vender el código, siempre que se conserve el aviso de copyright y el texto de la licencia.\nEl texto completo está disponible en:\nLicencia MIT\nIdentificador SPDX: MIT.",
+    "crumbs": [
+      "Inicio",
+      "Licencias"
+    ]
+  },
+  {
+    "objectID": "licenses.html#código-fuente",
+    "href": "licenses.html#código-fuente",
+    "title": "Licencias",
+    "section": "",
+    "text": "scripts escritos en R;\nfiltros, extensiones y utilidades;\narchivos de automatización;\nherramientas de construcción y publicación;\nfragmentos y ejemplos de código reutilizables.",
+    "crumbs": [
+      "Inicio",
+      "Licencias"
+    ]
+  },
+  {
+    "objectID": "licenses.html#contenido-editorial",
+    "href": "licenses.html#contenido-editorial",
+    "title": "Licencias",
+    "section": "Contenido editorial",
+    "text": "Contenido editorial\nLos textos, capítulos, diagramas, tablas e imágenes originales de la obra Ingeniería asistida por sistemas inteligentes se distribuyen bajo la licencia Creative Commons Attribution 4.0 International, salvo que se indique expresamente otra licencia.\nEsto incluye, entre otros:\n\nlos documentos y capítulos escritos en formato .qmd;\nel manifiesto y los principios;\nlos diagramas, tablas e ilustraciones originales;\nlas versiones HTML y PDF generadas a partir de la obra.\n\nEsta licencia permite compartir y adaptar el contenido, incluso con fines comerciales, siempre que se reconozca adecuadamente la autoría, se proporcione una referencia a la licencia y se indiquen los cambios realizados.\nEl texto legal completo está disponible en:\nCreative Commons Attribution 4.0 International\nIdentificador SPDX: CC-BY-4.0.",
+    "crumbs": [
+      "Inicio",
+      "Licencias"
+    ]
+  },
+  {
+    "objectID": "licenses.html#atribución",
+    "href": "licenses.html#atribución",
+    "title": "Licencias",
+    "section": "Atribución",
+    "text": "Atribución\nPara reutilizar el contenido editorial, se recomienda utilizar una atribución semejante a la siguiente:\n\nJavier G. Grandez, Ingeniería asistida por sistemas inteligentes, 2026. Licencia CC BY 4.0.\n\nCuando el contenido haya sido modificado, deberá indicarse de forma razonable que se han realizado cambios.",
+    "crumbs": [
+      "Inicio",
+      "Licencias"
+    ]
+  },
+  {
+    "objectID": "licenses.html#materiales-de-terceros",
+    "href": "licenses.html#materiales-de-terceros",
+    "title": "Licencias",
+    "section": "Materiales de terceros",
+    "text": "Materiales de terceros\nLos materiales pertenecientes a terceros conservan sus respectivas licencias, derechos de autor y condiciones de uso.\nSu inclusión o referencia en este proyecto no implica que estén cubiertos por la Licencia MIT ni por la licencia CC BY 4.0.\nCuando corresponda, la autoría, la procedencia y la licencia aplicable se indicarán junto al material o en su referencia bibliográfica.",
+    "crumbs": [
+      "Inicio",
+      "Licencias"
+    ]
+  },
+  {
+    "objectID": "licenses.html#alcance",
+    "href": "licenses.html#alcance",
+    "title": "Licencias",
+    "section": "Alcance",
+    "text": "Alcance\nLa Licencia MIT se aplica al código.\nLa licencia CC BY 4.0 se aplica al contenido editorial original.\nCuando un archivo incluya una indicación de licencia específica, esa indicación prevalecerá para dicho archivo.",
+    "crumbs": [
+      "Inicio",
+      "Licencias"
     ]
   }
 ]

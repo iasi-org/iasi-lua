@@ -6,9 +6,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Javier G. Grandez">
 
-<title>Quarto Extensions Framework</title>
+<title>References – Quarto Extensions Framework</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -27,7 +26,26 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -37,7 +55,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./chapters/01-origin/index.html" rel="next">
+<link href="./licenses.html" rel="next">
+<link href="./chapters/01-origin/01-problem.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -118,7 +137,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">PlantUML Engine</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./references.html">References</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Alternar barra lateral" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -132,7 +151,7 @@ ul.task-list li input[type="checkbox"] {
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link active">
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">PlantUML Engine</span></span></a>
   </div>
 </li>
@@ -161,7 +180,7 @@ ul.task-list li input[type="checkbox"] {
   </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./references.html" class="sidebar-item-text sidebar-link">
+  <a href="./references.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">References</span></a>
   </div>
 </li>
@@ -176,37 +195,21 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">Tabla de contenidos</h2>
-   
-  <ul>
-  <li><a href="#plantuml-engine" id="toc-plantuml-engine" class="nav-link active" data-scroll-target="#plantuml-engine"><span class="header-section-number">1</span> PlantUML Engine</a>
-  <ul class="collapse">
-  <li><a href="#documentación-técnica" id="toc-documentación-técnica" class="nav-link" data-scroll-target="#documentación-técnica"><span class="header-section-number">1.1</span> Documentación técnica</a></li>
-  </ul></li>
-  </ul>
-</nav>
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+        
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Quarto Extensions Framework</h1>
-<p class="subtitle lead">Arquitectura, artefactos y metodología emergente</p>
+<h1 class="title">References</h1>
 </div>
 
 
 
 <div class="quarto-title-meta">
 
-    <div>
-    <div class="quarto-title-meta-heading">Autor/a</div>
-    <div class="quarto-title-meta-contents">
-             <p>Javier G. Grandez </p>
-          </div>
-  </div>
     
   
     
@@ -217,23 +220,11 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="plantuml-engine" class="level1" data-number="1">
-<h1 data-number="1"><span class="header-section-number">1</span> PlantUML Engine</h1>
-<section id="documentación-técnica" class="level2" data-number="1.1">
-<h2 data-number="1.1" class="anchored" data-anchor-id="documentación-técnica"><span class="header-section-number">1.1</span> Documentación técnica</h2>
-<p>Este libro documenta la arquitectura, diseño e implementación del engine <strong>PlantUML</strong> para Quarto.</p>
-<p>El objetivo del proyecto es proporcionar una integración transparente entre Quarto y PlantUML, permitiendo que los diagramas formen parte del código fuente de la documentación.</p>
-<p>La documentación está organizada en cuatro bloques principales:</p>
-<ul>
-<li>Introducción y filosofía.</li>
-<li>Guía de uso.</li>
-<li>Arquitectura interna.</li>
-<li>Referencia técnica.</li>
-</ul>
+<div id="refs" role="list" style="display: none">
+
+</div>
 
 
-</section>
-</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -638,10 +629,13 @@ ul.task-list li input[type="checkbox"] {
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
+      <a href="./chapters/01-origin/01-problem.html" class="pagination-link" aria-label="El problema">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">El problema</span></span>
+      </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./chapters/01-origin/index.html" class="pagination-link" aria-label="Origen">
-        <span class="nav-page-text">Origen</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./licenses.html" class="pagination-link" aria-label="Licencias">
+        <span class="nav-page-text">Licencias</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

@@ -1,1 +1,1 @@
-return {enabled=true,server="http://javier:1025",format="svg",cache=true,styles={}}
+return {enabled=true,server="http://javier:1025",format="png",cache=true,styles={}}

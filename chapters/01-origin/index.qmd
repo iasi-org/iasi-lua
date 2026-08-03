@@ -1,0 +1,27 @@
+---
+title: "Origen"
+---
+
+# Origen
+
+Este libro documenta el desarrollo del **Quarto Extensions Framework**, una arquitectura para construir extensiones reutilizables sobre Quarto.
+
+Aunque el resultado final es un framework, ese nunca fue el objetivo inicial.
+
+El proyecto comenzó con una necesidad muy concreta: integrar PlantUML en el proceso de generación de documentos Quarto de una forma sencilla, reproducible y completamente integrada con el resto de la documentación.
+
+La primera implementación resolvía únicamente ese problema.
+
+Sin embargo, a medida que evolucionaba el proyecto aparecieron responsabilidades comunes, patrones repetidos y componentes que podían reutilizarse.
+
+La arquitectura comenzó entonces a transformarse de forma natural.
+
+Lo que inicialmente era un filtro específico terminó convirtiéndose en un núcleo compartido capaz de soportar múltiples extensiones independientes.
+
+Este libro describe ese proceso.
+
+No presenta una arquitectura diseñada completamente desde el principio.
+
+Describe cómo una solución concreta fue evolucionando hasta convertirse en un framework reutilizable, mostrando las decisiones técnicas adoptadas, las alternativas consideradas y las lecciones aprendidas durante el desarrollo.
+
+Los capítulos siguientes recorren esa evolución desde el problema original hasta la arquitectura actual.

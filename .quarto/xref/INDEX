@@ -1,5 +1,26 @@
 {
   "index.qmd": {
     "index.html": "5c55ae90"
+  },
+  "licenses.qmd": {
+    "licenses.html": "a03ad412"
+  },
+  "chapters/01-origin/01-problem.qmd": {
+    "01-problem.html": "52b978b8"
+  },
+  "chapters/01-origin/index.qmd": {
+    "index.html": "e9e970ec"
+  },
+  "references.qmd": {
+    "references.html": "ffb58ce9"
+  },
+  "./index.qmd": {
+    "index.html": "c6e67abd"
+  },
+  "./references.qmd": {
+    "references.html": "e2059eeb"
+  },
+  "./licenses.qmd": {
+    "licenses.html": "ca08943e"
   }
 }

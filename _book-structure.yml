@@ -1,0 +1,8 @@
+book:
+  chapters:
+    - "./index.qmd"
+    - part: "chapters/01-origin/index.qmd"
+      chapters:
+        - "chapters/01-origin/01-problem.qmd"
+    - "./references.qmd"
+    - "./licenses.qmd"

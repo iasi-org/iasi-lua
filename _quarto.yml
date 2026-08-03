@@ -1,19 +1,38 @@
 project:
   type: book
 
+  pre-render:
+    - R/generate-book-structure.R
+
+  resources:
+    - LICENSES/*.txt
+
 profile:
   group:
     - [html, pdf]
 
+metadata-files:
+   - _book-structure.yml
+
 lang: es
 
 book:
-  title: "PlantUML Engine"
-  subtitle: "Documentación técnica"
+  title: "Quarto Extensions Framework"
+  subtitle: "Arquitectura, artefactos y metodología emergente"
   author: "Javier G. Grandez"
 
   chapters:
     - "index.qmd"
+
+  navbar:
+    left:
+      - text: "Inicio"
+        href: index.qmd
+
+    right:
+      - icon: github
+        href: https://github.com/Grandez/iasi-lua
+        aria-label: GitHub
     
   page-footer:
     left: "© 2026 Javier G. Grandez"
@@ -43,7 +62,7 @@ filter-options:
   plantuml:
     enabled: true
     server: http://javier:1025
-    format: svg
+    format: png
     cache: true
     styles:
       - resources/plantuml/iasi.puml
