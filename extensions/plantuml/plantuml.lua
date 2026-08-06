@@ -1,7 +1,0 @@
-local extension_dir = pandoc.path.directory(PANDOC_SCRIPT_FILE)
-local extensions_dir = pandoc.path.directory(extension_dir)
-local core_dir = pandoc.path.join({ extensions_dir, "core" })
-local Engine = dofile(pandoc.path.join({ core_dir, "engine.lua" }))
-local Compiler = dofile(pandoc.path.join({ extension_dir, "compiler.lua" }))
-local Defaults = dofile(pandoc.path.join({ extension_dir, "defaults.lua" }))
-return Engine.create({name="plantuml",block_class="plantuml",version="1.0.0",core_dir=core_dir,compiler=Compiler,defaults=Defaults})
