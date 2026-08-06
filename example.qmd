@@ -1,0 +1,33 @@
+---
+title: "IASI Lua: PlantUML"
+format: html
+filters:
+  - iasi-lua
+filter-options:
+  plantuml:
+    enabled: true
+    server: http://localhost:1025
+    format: png
+    cache: false
+---
+
+## Diagrama válido
+
+```{.plantuml #fig-example width="70%" fig-cap="Ejemplo PlantUML" fig-alt="Secuencia entre Alice y Bob"}
+@startuml
+Alice -> Bob: Hola
+Bob --> Alice: Respuesta
+@enduml
+```
+
+## Diagnóstico dentro del documento
+
+El siguiente bloque contiene deliberadamente un error. PlantUML debe devolver
+una imagen de diagnóstico y el renderizado debe continuar.
+
+```{.plantuml width="70%"}
+@startuml
+top to bottom direction
+start
+@enduml
+```

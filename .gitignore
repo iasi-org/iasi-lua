@@ -1,0 +1,8 @@
+.quarto/
+_site/
+_book/
+*.html
+*.pdf
+*.log
+.DS_Store
+Thumbs.db
