@@ -1,0 +1,25 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "IASI: build all extensions",
+      "type": "shell",
+      "command": "python scripts/build-all.py",
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "IASI: check generated distributions",
+      "type": "shell",
+      "command": "python scripts/check-generated.py",
+      "problemMatcher": []
+    },
+    {
+      "label": "IASI: test all extensions",
+      "type": "shell",
+      "command": "powershell -ExecutionPolicy Bypass -File scripts/test-all.ps1",
+      "group": "test",
+      "problemMatcher": []
+    }
+  ]
+}

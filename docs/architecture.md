@@ -1,67 +1,36 @@
 # Arquitectura
 
-## Separación de responsabilidades
+## Estructura
 
 ```text
-core/
-  configuración
-  caché
-  sistema de archivos
-  publicación en mediabag
-  recorrido del documento
-
-plantuml/
-  preparación de fuente
-  estilos
-  transporte HTTP
-  validación de respuesta
-  política de diagnóstico
+core/                       fuente común
+plantuml/                   fuente específica PlantUML
+        │
+        ▼
+scripts/build_extension.py
+        │
+        ▼
+_extensions/iasi-plantuml/  distribución Quarto generada
 ```
 
-El núcleo desconoce PlantUML. El compilador desconoce cómo se publica una imagen
-en Pandoc.
+La estructura de fuente evita capas `src/` y `manifest/` innecesarias. Cada extensión es un directorio raíz legible y autocontenido desde el punto de vista del desarrollo.
 
-## Contrato del compilador
+`core/` no es una extensión Quarto. Es la plataforma compartida que se copia dentro de cada distribución para que la extensión instalada sea autónoma.
 
-```lua
-Compiler.normalize_config(config)
-Compiler.prepare(source, config)
-Compiler.mime_type(config)
-Compiler.compile(source, config)
+## Responsabilidades
+
+```text
+core/engine.lua          ciclo del filtro, caché y publicación
+core/config.lua          configuración global y por bloque
+core/cache.lua           persistencia de resultados válidos
+core/mediabag.lua        inserción de imágenes en Pandoc
+core/filesystem.lua      operaciones de archivos
+core/metadata.lua        normalización de metadatos
+plantuml/compiler.lua    preparación y POST al servidor PlantUML
+plantuml/defaults.lua    valores predeterminados
+plantuml/iasi-plantuml.lua ensamblado del filtro
 ```
 
-`compile()` devuelve:
+## Distribución
 
-```lua
-mime_type, contents, metadata
-```
-
-Los metadatos admiten:
-
-```lua
-{
-  cacheable = true,
-  diagnostic = false
-}
-```
-
-Un diagnóstico gráfico utiliza:
-
-```lua
-{
-  cacheable = false,
-  diagnostic = true
-}
-```
-
-## Identidad de caché
-
-La identidad incluye:
-
-- fuente preparada;
-- servidor;
-- formato;
-- versión del compilador.
-
-Los atributos de presentación, como `width` y `height`, no forman parte de la
-identidad porque no modifican la imagen compilada.
+Todo lo situado bajo `_extensions/` se considera generado. La fuente de verdad permanece en `core/` y en cada directorio de extensión.

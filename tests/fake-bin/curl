@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-set -euo pipefail
-cat >/dev/null
-printf '\211PNG\r\n\032\nIASI-TEST'
-printf '\nIASI_PLANTUML_HTTP_STATUS:%s' "${FAKE_STATUS:-200}"

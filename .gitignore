@@ -1,8 +1,8 @@
-.quarto/
-_site/
-_book/
-*.html
-*.pdf
-*.log
+__pycache__/
+*.pyc
 .DS_Store
 Thumbs.db
+.quarto/
+*_files/
+*.html
+*.pdf

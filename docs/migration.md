@@ -1,39 +1,18 @@
-# Migración desde `iasi-standards`
+# Migración desde IASI Lua 0.3.x
 
-## Antes
-
-```yaml
-filters:
-  - ../../iasi-standards/resources/quarto/extensions/plantuml/plantuml.lua
-```
-
-## Después
-
-Instale la extensión en el proyecto consumidor:
-
-```powershell
-quarto add P:\iasi\iasi-lua
-```
-
-Y configure:
+La antigua extensión única `iasi-lua` pasa a ser un repositorio contenedor. PlantUML tiene identidad propia:
 
 ```yaml
 filters:
-  - iasi-lua
-
-filter-options:
-  plantuml:
-    enabled: true
-    server: http://javier:1025
-    format: png
-    cache: true
+  - iasi-plantuml
 ```
 
-Una vez verificado el proyecto consumidor, elimine la copia de desarrollo de:
+La fuente común vive en `core/` y la fuente específica directamente en `plantuml/`.
+
+Antes de esta simplificación, PlantUML estaba separado artificialmente en `plantuml/src/`, `plantuml/manifest/` y `plantuml/_extensions/`. Esas capas desaparecen.
+
+La distribución Quarto común del repositorio se genera ahora en:
 
 ```text
-iasi-standards/resources/quarto/
+_extensions/iasi-plantuml/
 ```
-
-La extensión instalada bajo `_extensions/` debe quedar versionada junto con la
-publicación para conservar la reproducibilidad.

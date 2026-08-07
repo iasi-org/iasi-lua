@@ -1,0 +1,7 @@
+title: IASI Extension Name
+author: Javier G. Grandez
+version: 0.1.0
+
+contributes:
+  filters:
+    - extension-name.lua
