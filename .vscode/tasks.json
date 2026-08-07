@@ -4,20 +4,23 @@
     {
       "label": "IASI: build all extensions",
       "type": "shell",
-      "command": "python scripts/build-all.py",
+      "command": "bash",
+      "args": ["scripts/build-all.sh"],
       "group": "build",
       "problemMatcher": []
     },
     {
       "label": "IASI: check generated distributions",
       "type": "shell",
-      "command": "python scripts/check-generated.py",
+      "command": "bash",
+      "args": ["scripts/check-generated.sh"],
       "problemMatcher": []
     },
     {
       "label": "IASI: test all extensions",
       "type": "shell",
-      "command": "powershell -ExecutionPolicy Bypass -File scripts/test-all.ps1",
+      "command": "bash",
+      "args": ["scripts/test-all.sh"],
       "group": "test",
       "problemMatcher": []
     }

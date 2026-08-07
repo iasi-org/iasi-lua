@@ -8,33 +8,27 @@ La estructura de desarrollo es deliberadamente plana:
 core/                    plataforma Lua común
 plantuml/                fuente de IASI PlantUML
 _extensions/             distribuciones Quarto generadas
-scripts/                 build, comprobaciones y pruebas
+scripts/                 automatización Bash
 ```
 
 `_extensions/` es un artefacto de distribución. No es la fuente de desarrollo.
+
+## Entorno operativo
+
+Toda la automatización del repositorio está escrita en **Bash**.
+
+```text
+Linux       Bash nativo
+Windows     WSL u otro entorno Bash compatible
+```
+
+No se mantiene una implementación paralela en PowerShell o Python para las operaciones del proyecto.
 
 ## Extensiones
 
 | Extensión | Versión | Filtro |
 |---|---:|---|
 | IASI PlantUML | 0.4.0 | `iasi-plantuml` |
-
-## Instalación y selección
-
-El repositorio genera las extensiones instalables bajo `_extensions/`. En un proyecto Quarto consumidor, la distribución puede añadirse desde el repositorio y cada filtro se carga de forma explícita.
-
-```powershell
-quarto add iasi/iasi-lua
-```
-
-Instalar el repositorio no obliga a ejecutar todas sus extensiones. El proyecto decide cuáles cargar:
-
-```yaml
-filters:
-  - iasi-plantuml
-```
-
-Cuando existan nuevas extensiones podrán convivir bajo `_extensions/` y declararse de forma independiente en `filters`.
 
 ## IASI PlantUML
 
@@ -48,18 +42,11 @@ cache: true
 styles: []
 ```
 
-Configuración mínima de un proyecto consumidor:
+Un proyecto consumidor carga la extensión explícitamente:
 
 ```yaml
 filters:
   - iasi-plantuml
-
-filter-options:
-  plantuml:
-    enabled: true
-    server: http://javier:1025
-    format: png
-    cache: true
 ```
 
 Uso:
@@ -74,7 +61,7 @@ PlantUML -> Imagen
 ```
 ````
 
-La extensión envía la fuente al servidor mediante `POST /png/`. Si PlantUML devuelve un PNG de diagnóstico con un HTTP de error, la imagen de diagnóstico se inserta en el documento, no entra en caché y el render continúa.
+La extensión envía la fuente al servidor mediante `POST /png/`. Si PlantUML devuelve un PNG de diagnóstico con un HTTP de error, esa imagen se inserta en el documento, no entra en caché y el render continúa.
 
 ## Desarrollo
 
@@ -98,28 +85,57 @@ El core común vive en:
 core/
 ```
 
-Reconstruir las distribuciones:
+La distribución se genera en:
 
-```powershell
-python scripts\build-all.py
+```text
+_extensions/iasi-plantuml/
 ```
 
-Comprobar que lo generado coincide con la fuente:
+No se editan manualmente archivos dentro de `_extensions/`.
 
-```powershell
-python scripts\check-generated.py
-python scripts\check-versions.py
+## Comandos del proyecto
+
+Construir todas las extensiones:
+
+```bash
+./scripts/build-all.sh
 ```
 
-Ejecutar pruebas:
+Construir una extensión:
 
-```powershell
-.\scripts\test-all.ps1
+```bash
+./scripts/build-extension.sh plantuml
 ```
+
+Comprobar que las distribuciones generadas coinciden con las fuentes:
+
+```bash
+./scripts/check-generated.sh
+```
+
+Comprobar las versiones:
+
+```bash
+./scripts/check-versions.sh
+```
+
+Ejecutar todas las pruebas:
+
+```bash
+./scripts/test-all.sh
+```
+
+Instalar la distribución local en un proyecto Quarto:
+
+```bash
+./scripts/install-local.sh /ruta/al/proyecto
+```
+
+Sin argumento, `install-local.sh` utiliza el directorio actual como proyecto consumidor.
 
 ## Distribución
 
-El build genera:
+El build genera una extensión Quarto autónoma:
 
 ```text
 _extensions/
@@ -132,8 +148,6 @@ _extensions/
     ├── version.lua
     └── ...
 ```
-
-Cuando existan nuevas extensiones se añadirán como directorios hermanos de `plantuml/` y como distribuciones hermanas bajo `_extensions/`.
 
 La versión editable de IASI PlantUML vive únicamente en:
 

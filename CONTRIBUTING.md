@@ -9,35 +9,35 @@ core/
 plantuml/
 ```
 
-Dentro de `plantuml/`, los archivos de código y metadatos están todos al mismo nivel. Las pruebas viven en `plantuml/tests/`.
-
 No se edita directamente:
 
 ```text
-_extensions/iasi-plantuml/
+_extensions/
 ```
 
-Ese directorio es la distribución Quarto generada. Se reconstruye con:
+Ese directorio contiene las distribuciones Quarto generadas.
 
-```powershell
-python scripts\build-all.py
-```
+## Automatización
+
+Todas las operaciones del repositorio se implementan en Bash. En Windows se utiliza WSL u otro entorno Bash compatible. No se crean scripts equivalentes en PowerShell o Python.
 
 ## Antes de un commit
 
-```powershell
-python scripts\build-all.py
-python scripts\check-generated.py
-python scripts\check-versions.py
-.\scripts\test-all.ps1
+```bash
+./scripts/build-all.sh
+./scripts/check-generated.sh
+./scripts/check-versions.sh
+./scripts/test-all.sh
 ```
 
 ## Nueva extensión
 
 1. Copiar `templates/extension/` a un nuevo directorio raíz, por ejemplo `graphviz/`.
-2. Implementar allí `_extension.yml`, filtro, compilador, valores predeterminados y pruebas.
-3. Registrar la extensión en `scripts/extensions.py`.
-4. Generar `_extensions/<id>/`.
-5. Documentarla en el README.
+2. Implementar `_extension.yml`, filtro, compilador, valores predeterminados y pruebas.
+3. Ejecutar `./scripts/build-all.sh`.
+4. Verificar con `./scripts/test-all.sh`.
+5. Documentar el filtro público.
+
+No existe un registro manual de extensiones: los scripts descubren automáticamente los directorios raíz que contienen `_extension.yml`.
 
 `core/` permanece común. Cada distribución generada recibe una copia autónoma del core que necesita.

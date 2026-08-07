@@ -11,8 +11,10 @@ La fuente común vive en `core/` y la fuente específica directamente en `plantu
 
 Antes de esta simplificación, PlantUML estaba separado artificialmente en `plantuml/src/`, `plantuml/manifest/` y `plantuml/_extensions/`. Esas capas desaparecen.
 
-La distribución Quarto común del repositorio se genera ahora en:
+La distribución Quarto común del repositorio se genera en:
 
 ```text
 _extensions/iasi-plantuml/
 ```
+
+La automatización se unifica en Bash para Linux y Windows mediante WSL u otro entorno Bash compatible.
