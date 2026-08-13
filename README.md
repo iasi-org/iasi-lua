@@ -7,6 +7,7 @@ La estructura de desarrollo es deliberadamente plana:
 ```text
 core/                    plataforma Lua común
 plantuml/                fuente de IASI PlantUML
+shiny/                   fuente de IASI Shiny
 _extensions/             distribuciones Quarto generadas
 scripts/                 automatización Bash
 ```
@@ -29,6 +30,25 @@ No se mantiene una implementación paralela en PowerShell o Python para las oper
 | Extensión | Versión | Filtro |
 |---|---:|---|
 | IASI PlantUML | 0.4.0 | `iasi-plantuml` |
+| IASI Shiny | 0.1.0 | `iasi-shiny` |
+
+## IASI Shiny
+
+IASI Shiny integra aplicaciones Shiny para R en documentos HTML estáticos
+mediante Shinylive y webR. Durante el render requiere el paquete R
+`shinylive`; la publicación resultante puede alojarse en GitHub Pages.
+
+```r
+install.packages("shinylive")
+```
+
+```yaml
+filters:
+  - iasi-shiny
+```
+
+Los bloques interactivos utilizan la clase `{shinylive-r}` y deben declarar
+`standalone: true`. Consulta `shiny/example.qmd` para un ejemplo completo.
 
 ## IASI PlantUML
 

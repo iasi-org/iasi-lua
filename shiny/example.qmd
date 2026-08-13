@@ -1,0 +1,28 @@
+---
+title: "IASI Shiny"
+format:
+  html:
+    embed-resources: false
+filters:
+  - iasi-shiny
+---
+
+```{shinylive-r}
+#| standalone: true
+#| viewerHeight: 420
+
+library(shiny)
+
+ui <- fluidPage(
+  sliderInput("n", "Valor", 1, 100, 50),
+  plotOutput("plot")
+)
+
+server <- function(input, output, session) {
+  output$plot <- renderPlot({
+    plot(seq_len(input$n), type = "l")
+  })
+}
+
+shinyApp(ui, server)
+```
